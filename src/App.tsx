@@ -27,7 +27,7 @@ function App() {
     <>
       <Header ref={headerRef} />
       <Routes>
-        <Route index element={<FractalTriangleV2 headerRef={headerRef} />} />
+        <Route index element={<FractalTriangleV1 headerRef={headerRef} />} />
         <Route path="/v1" element={<FractalTriangleV1 headerRef={headerRef} />} />
         <Route path="/v2" element={<FractalTriangleV2 headerRef={headerRef} />} />
       </Routes>
