@@ -58,7 +58,7 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
     const attractors = [
       { x: 0, y: 0 },
       { x: 1, y: 0 },
-      { x: 0.5, y: Math.sqrt(3) / 2 },
+      { x: 0.5, y: 1 },
     ];
 
     let currentPoint = { x: startX, y: startY };
@@ -98,7 +98,7 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
     canvasSize.height =
       window.innerHeight > window.innerWidth
         ? window.innerWidth
-        : window.innerHeight;
+        : window.innerHeight - headerHeight;
 
 
 
