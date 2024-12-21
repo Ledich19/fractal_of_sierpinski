@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import s from "./header.module.scss"
 
 // Компонент Header оборачивается forwardRef
-const Header = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
+const Header = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((_, ref) => {
   const [version, setVersion] = useState('');
   const location = useLocation();
 
