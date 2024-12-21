@@ -24,8 +24,14 @@ jobs:
       - name: Build with Vite
         run: npm run build
 
+      - name: Clean old deployment data
+        run: |
+          git worktree prune
+          rm -rf github-pages-deploy-action-temp-deployment-folder
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
           folder: dist
+          clean: true
