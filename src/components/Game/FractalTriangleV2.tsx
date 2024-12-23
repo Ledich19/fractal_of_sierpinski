@@ -4,11 +4,25 @@ interface FractalTriangleV2Props {
   headerRef: React.RefObject<HTMLDivElement>;
 }
 
+interface Point {
+  x: number;
+  y: number;
+}
+
+interface Triangle {
+  p1: Point;
+  p2: Point;
+  p3: Point;
+}
+
 const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
   const headerHeight = headerRef.current?.offsetHeight || 0;
-  const [canvasSize, setCanvasSize] = useState({
-    width: window.innerHeight < window.innerWidth ? window.innerHeight : window.innerWidth,
-    height: window.innerHeight > window.innerWidth ? window.innerWidth : window.innerHeight - headerHeight,
+  const [canvasSize, _] = useState({
+    width: window.innerWidth,
+    height:
+      window.innerHeight > window.innerWidth
+        ? window.innerWidth
+        : window.innerHeight - headerHeight,
   });
 
   const maxIterations = 10;
@@ -16,29 +30,7 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
   const [triangles, setTriangles] = useState<Triangle[]>([]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const updateCanvasSize = () => {
-    const headerHeight = headerRef.current?.offsetHeight || 0;
-    const width = window.innerWidth;
-    const height = window.innerHeight - headerHeight;
-    setCanvasSize({ width, height });
-
-    const canvas = canvasRef.current;
-    if (canvas) {
-      canvas.width = width;
-      canvas.height = height;
-    }
-  };
-
-  useEffect(() => {
-    updateCanvasSize();
-    window.addEventListener("resize", updateCanvasSize);
-
-    return () => {
-      window.removeEventListener("resize", updateCanvasSize);
-    };
-  }, [headerRef]);
-
+  
   const drawTriangle = (
     context: CanvasRenderingContext2D,
     p1: Point,
@@ -62,10 +54,15 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
     const context = canvas.getContext("2d");
     if (!context) return;
     const { width, height } = canvasSize;
-    const size = Math.min(width, height);
-    const p1: Point = { x: width / 2, y: 0 };
-    const p2: Point = { x: 0, y: size };
-    const p3: Point = { x: width, y: size };
+    const maxSideLength = Math.min(width, height);
+    const heightOfTriangle = maxSideLength * Math.sqrt(3) / 2;
+    const centerX = width / 2;
+    const centerY = (height - heightOfTriangle) / 2;
+    const p1: Point = { x: centerX, y: centerY };
+    const p2: Point = { x: centerX - maxSideLength / 2, y: centerY + heightOfTriangle };
+    const p3: Point = { x: centerX + maxSideLength / 2, y: centerY + heightOfTriangle };
+  console.log(p1,  p2, p3);
+  
     context.clearRect(0, 0, width, height);
     setTriangles([{ p1, p2, p3 }]);
     drawTriangle(context, p1, p2, p3, "white");
@@ -73,7 +70,7 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
 
   useEffect(() => {
     drawInitialTriangle();
-  }, [canvasSize, drawInitialTriangle]);
+  }, [canvasSize, drawInitialTriangle, headerHeight]);
 
   const handleCanvasClick = () => {
     if (iterations < maxIterations) {
@@ -83,7 +80,7 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
       const context = canvas.getContext("2d");
       if (!context) return;
 
-      context.clearRect(0, 0, canvas.width, canvas.height); 
+      context.clearRect(0, 0, canvas.width, canvas.height);
       drawInitialTriangle();
 
       const drawFrame = () => {
@@ -110,13 +107,32 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
     }
   };
 
+  const handleVisibilityChange = () => {
+    if (document.hidden) return;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        drawInitialTriangle();
+      }
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [drawInitialTriangle]);
+
   return (
     <canvas
       ref={canvasRef}
       onClick={handleCanvasClick}
       width={canvasSize.width}
       height={canvasSize.height}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: `${window.innerHeight - headerHeight}px` }}
     ></canvas>
   );
 };
