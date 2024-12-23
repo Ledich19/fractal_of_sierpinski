@@ -55,10 +55,11 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
     startX: number,
     startY: number
   ) => {
+    const size = Math.min(canvasSize.width , canvasSize.height);
     const attractors = [
       { x: canvasSize.width / 2, y: 0 }, 
-      { x: 0, y: canvasSize.height },
-      { x: canvasSize.width, y: canvasSize.height },
+      { x: 0, y: size  },
+      { x: canvasSize.width, y: size  },
     ];
   
     let currentPoint = { x: startX, y: startY };
