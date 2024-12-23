@@ -56,34 +56,30 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
     startY: number
   ) => {
     const attractors = [
-      { x: 0, y: 0 },
-      { x: 1, y: 0 },
-      { x: 0.5, y: 1 },
+      { x: canvasSize.width / 2, y: 0 }, 
+      { x: 0, y: canvasSize.height },
+      { x: canvasSize.width, y: canvasSize.height },
     ];
-
+  
     let currentPoint = { x: startX, y: startY };
-
+  
     let iterations = 0;
     const maxIterations = 50000;
-
+  
     const drawFrame = () => {
       const activeAttractor = attractors[Math.floor(Math.random() * 3)];
       const newX = (currentPoint.x + activeAttractor.x) / 2;
       const newY = (currentPoint.y + activeAttractor.y) / 2;
       currentPoint = { x: newX, y: newY };
-      drawPoint(
-        context,
-        currentPoint.x * canvasSize.width,
-        currentPoint.y * canvasSize.height
-      );
-
+      drawPoint(context, currentPoint.x, currentPoint.y);
+  
       iterations++;
-
+  
       if (iterations < maxIterations) {
         requestAnimationFrame(drawFrame);
       }
     };
-
+  
     drawFrame();
   };
 
