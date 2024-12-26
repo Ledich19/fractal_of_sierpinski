@@ -1,18 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 
 interface FractalTriangleV1Props {
-  headerRef: React.RefObject<HTMLDivElement>;
+
 }
 
-const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
-  const headerHeight = headerRef.current?.offsetHeight || 0;
+const FractalTriangleV1: React.FC<FractalTriangleV1Props> = () => {
   
   const [canvasSize, setCanvasSize] = useState({
     width: window.innerWidth,
     height:
       window.innerHeight > window.innerWidth
         ? window.innerWidth
-        : window.innerHeight - headerHeight,
+        : window.innerHeight,
   });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -74,7 +73,7 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
       height:
         window.innerHeight > window.innerWidth
           ? window.innerWidth
-          : window.innerHeight - headerHeight,
+          : window.innerHeight,
     });
 
     const x = event.clientX - canvas.getBoundingClientRect().left;
@@ -91,7 +90,7 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
         height:
           window.innerHeight > window.innerWidth
             ? window.innerWidth
-            : window.innerHeight - headerHeight,
+            : window.innerHeight,
       });
     };
 
@@ -101,7 +100,7 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = ({ headerRef }) => {
     return () => {
       window.removeEventListener("resize", updateCanvasSize);
     };
-  }, [headerHeight]);
+  }, []);
 
   return (
     <canvas

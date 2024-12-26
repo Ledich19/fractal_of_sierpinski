@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 
 interface FractalTriangleV2Props {
-  headerRef: React.RefObject<HTMLDivElement>;
 }
 
 interface Point {
@@ -15,14 +14,13 @@ interface Triangle {
   p3: Point;
 }
 
-const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
-  const headerHeight = headerRef.current?.offsetHeight || 0;
+const FractalTriangleV2: React.FC<FractalTriangleV2Props> = () => {
   const [canvasSize, _] = useState({
     width: window.innerWidth,
     height:
       window.innerHeight > window.innerWidth
         ? window.innerWidth
-        : window.innerHeight - headerHeight,
+        : window.innerHeight,
   });
 
   const maxIterations = 10;
@@ -68,9 +66,7 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
     drawTriangle(context, p1, p2, p3, "white");
   }, [canvasSize]);
 
-  useEffect(() => {
-    drawInitialTriangle();
-  }, [canvasSize, drawInitialTriangle, headerHeight]);
+  
 
   const handleCanvasClick = () => {
     if (iterations < maxIterations) {
@@ -120,6 +116,10 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
   };
 
   useEffect(() => {
+    drawInitialTriangle();
+  }, [canvasSize, drawInitialTriangle]);
+
+  useEffect(() => {
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
@@ -132,7 +132,7 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = ({ headerRef }) => {
       onClick={handleCanvasClick}
       width={canvasSize.width}
       height={canvasSize.height}
-      style={{ width: "100%", height: `${window.innerHeight - headerHeight}px` }}
+      style={{ width: "100%", height: `${window.innerHeight}px` }}
     ></canvas>
   );
 };

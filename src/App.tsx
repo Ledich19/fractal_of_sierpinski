@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import "./App.css";
 import Header from "./components/Header/Header";
 import { Route, Routes } from "react-router-dom";
@@ -17,7 +17,6 @@ declare global {
 }
 
 function App() {
-  const headerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     tg.ready();
@@ -25,11 +24,11 @@ function App() {
 
   return (
     <>
-      <Header ref={headerRef} />
+      <Header  />
       <Routes>
-        <Route index element={<FractalTriangleV1 headerRef={headerRef} />} />
-        <Route path="/v1" element={<FractalTriangleV1 headerRef={headerRef} />} />
-        <Route path="/v2" element={<FractalTriangleV2 headerRef={headerRef} />} />
+        <Route index element={<FractalTriangleV1  />} />
+        <Route path="/v1" element={<FractalTriangleV1  />} />
+        <Route path="/v2" element={<FractalTriangleV2  />} />
       </Routes>
     </>
   );
