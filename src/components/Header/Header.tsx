@@ -9,24 +9,22 @@ const Header = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const versionParam = params.get('version');
-
-    if (versionParam === 'v1' || versionParam === 'v2') {
+    if (versionParam) {
       setVersion(versionParam);
-    } else if (location.pathname === '/v1') {
-      setVersion('v1');
-    } else if (location.pathname === '/v2') {
-      setVersion('v2');
     }
   }, [location]);
 
   return (
     <div className={s.header}>
       <div className={s.navigation}>
-        <Link to="v1">
+        <Link to="sierpinski_1">
           <h3>Варіант 1</h3>
         </Link>
-        <Link to="v2">
+        <Link to="sierpinski_2">
           <h3>Варіант 2</h3>
+        </Link>
+        <Link to="mandelbrot">
+          <h3>mandelbrot</h3>
         </Link>
       </div>
 

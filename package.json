@@ -30,6 +30,7 @@
     "sass": "^1.83.0",
     "sass-embedded": "^1.83.0",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-plugin-string": "^1.2.3"
   }
 }
