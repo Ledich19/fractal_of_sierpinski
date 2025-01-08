@@ -10,9 +10,6 @@ const FractalMandelbrot: React.FC = () => {
   const [dragging, setDragging] = useState(false);
   const [startDrag, setStartDrag] = useState({ x: 0, y: 0 });
 
-
- 
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -74,11 +71,16 @@ const FractalMandelbrot: React.FC = () => {
     render();
 
     const handleWheel = (event: WheelEvent) => {
-      const zoomFactor = 1.2;
+      event.preventDefault();
+      
+      // Новый коэффициент для более плавной прокрутки
+      const zoomFactor = 1.05;  // Меньший коэффициент для более плавного зума
+
+      // При прокрутке колесом определяем, на сколько увеличивать/уменьшать зум
       if (event.deltaY < 0) {
-        setZoom(prevZoom => Math.max(prevZoom / zoomFactor, 1e-15));
+        setZoom(prevZoom => Math.max(prevZoom / zoomFactor, 1e-15));  // Уменьшаем зум
       } else {
-        setZoom(prevZoom => Math.min(prevZoom * zoomFactor, 1e10));
+        setZoom(prevZoom => Math.min(prevZoom * zoomFactor, 1e10));  // Увеличиваем зум
       }
     };
 

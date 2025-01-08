@@ -18,10 +18,10 @@ const Header = () => {
     <div className={s.header}>
       <div className={s.navigation}>
         <Link to="sierpinski_1">
-          <h3>Варіант 1</h3>
+          <h3>sierpinski_v1</h3>
         </Link>
         <Link to="sierpinski_2">
-          <h3>Варіант 2</h3>
+          <h3>sierpinski_v2</h3>
         </Link>
         <Link to="mandelbrot">
           <h3>mandelbrot</h3>
