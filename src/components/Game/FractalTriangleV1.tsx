@@ -1,17 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 
-interface FractalTriangleV1Props {
-
-}
+interface FractalTriangleV1Props {}
 
 const FractalTriangleV1: React.FC<FractalTriangleV1Props> = () => {
-  
-  const [canvasSize, setCanvasSize] = useState({
-    width: window.innerWidth,
-    height:
-      window.innerHeight > window.innerWidth
-        ? window.innerWidth
-        : window.innerHeight,
+  const [canvasSize, setCanvasSize] = useState(() => {
+    const size = Math.min(window.innerWidth, window.innerHeight);
+    return { width: size, height: size };
   });
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -32,11 +26,11 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = () => {
     startX: number,
     startY: number
   ) => {
-    const size = Math.min(canvasSize.width, canvasSize.height);
+    const size = canvasSize.width;
     const attractors = [
-      { x: canvasSize.width / 2, y: 0 },
+      { x: size / 2, y: 0 },
       { x: 0, y: size },
-      { x: canvasSize.width, y: size },
+      { x: size, y: size },
     ];
 
     let currentPoint = { x: startX, y: startY };
@@ -68,30 +62,17 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = () => {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    setCanvasSize({
-      width: window.innerWidth,
-      height:
-        window.innerHeight > window.innerWidth
-          ? window.innerWidth
-          : window.innerHeight,
-    });
-
     const x = event.clientX - canvas.getBoundingClientRect().left;
     const y = event.clientY - canvas.getBoundingClientRect().top;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-    generateChaosFractal(context, x / canvas.width, y / canvas.height);
+    generateChaosFractal(context, x, y);
   };
 
   useEffect(() => {
     const updateCanvasSize = () => {
-      setCanvasSize({
-        width: window.innerWidth,
-        height:
-          window.innerHeight > window.innerWidth
-            ? window.innerWidth
-            : window.innerHeight,
-      });
+      const size = Math.min(window.innerWidth, window.innerHeight);
+      setCanvasSize({ width: size, height: size });
     };
 
     updateCanvasSize();
@@ -102,13 +83,24 @@ const FractalTriangleV1: React.FC<FractalTriangleV1Props> = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    generateChaosFractal(context, canvasSize.width / 2, canvasSize.height / 2);
+  }, [canvasSize]);
+
   return (
     <canvas
       ref={canvasRef}
       onClick={handleCanvasClick}
       width={canvasSize.width}
       height={canvasSize.height}
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: `${canvasSize.width}px`, height: `${canvasSize.height}px` }}
     ></canvas>
   );
 };

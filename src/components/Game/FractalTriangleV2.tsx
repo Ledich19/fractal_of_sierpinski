@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 
-interface FractalTriangleV2Props {
-}
+interface FractalTriangleV2Props {}
 
 interface Point {
   x: number;
@@ -15,12 +14,9 @@ interface Triangle {
 }
 
 const FractalTriangleV2: React.FC<FractalTriangleV2Props> = () => {
-  const [canvasSize, _] = useState({
-    width: window.innerWidth,
-    height:
-      window.innerHeight > window.innerWidth
-        ? window.innerWidth
-        : window.innerHeight,
+  const [canvasSize, setCanvasSize] = useState(() => {
+    const size = Math.min(window.innerWidth, window.innerHeight);
+    return { width: size, height: size };
   });
 
   const maxIterations = 10;
@@ -28,7 +24,7 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = () => {
   const [triangles, setTriangles] = useState<Triangle[]>([]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   const drawTriangle = (
     context: CanvasRenderingContext2D,
     p1: Point,
@@ -52,21 +48,18 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = () => {
     const context = canvas.getContext("2d");
     if (!context) return;
     const { width, height } = canvasSize;
-    const maxSideLength = Math.min(width, height);
-    const heightOfTriangle = maxSideLength * Math.sqrt(3) / 2;
+    const size = Math.min(width, height);
+    const heightOfTriangle = size * Math.sqrt(3) / 2;
     const centerX = width / 2;
     const centerY = (height - heightOfTriangle) / 2;
     const p1: Point = { x: centerX, y: centerY };
-    const p2: Point = { x: centerX - maxSideLength / 2, y: centerY + heightOfTriangle };
-    const p3: Point = { x: centerX + maxSideLength / 2, y: centerY + heightOfTriangle };
-  console.log(p1,  p2, p3);
-  
+    const p2: Point = { x: centerX - size / 2, y: centerY + heightOfTriangle };
+    const p3: Point = { x: centerX + size / 2, y: centerY + heightOfTriangle };
+
     context.clearRect(0, 0, width, height);
     setTriangles([{ p1, p2, p3 }]);
     drawTriangle(context, p1, p2, p3, "white");
   }, [canvasSize]);
-
-  
 
   const handleCanvasClick = () => {
     if (iterations < maxIterations) {
@@ -116,6 +109,20 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = () => {
   };
 
   useEffect(() => {
+    const updateCanvasSize = () => {
+      const size = Math.min(window.innerWidth, window.innerHeight);
+      setCanvasSize({ width: size, height: size });
+    };
+
+    updateCanvasSize();
+    window.addEventListener("resize", updateCanvasSize);
+
+    return () => {
+      window.removeEventListener("resize", updateCanvasSize);
+    };
+  }, []);
+
+  useEffect(() => {
     drawInitialTriangle();
   }, [canvasSize, drawInitialTriangle]);
 
@@ -132,7 +139,7 @@ const FractalTriangleV2: React.FC<FractalTriangleV2Props> = () => {
       onClick={handleCanvasClick}
       width={canvasSize.width}
       height={canvasSize.height}
-      style={{ width: "100%", height: `${window.innerHeight}px` }}
+      style={{ width: `${canvasSize.width}px`, height: `${canvasSize.height}px` }}
     ></canvas>
   );
 };
