@@ -72,15 +72,11 @@ const FractalMandelbrot: React.FC = () => {
 
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault();
-      
-      // Новый коэффициент для более плавной прокрутки
-      const zoomFactor = 1.05;  // Меньший коэффициент для более плавного зума
-
-      // При прокрутке колесом определяем, на сколько увеличивать/уменьшать зум
+      const zoomFactor = 1.05;
       if (event.deltaY < 0) {
-        setZoom(prevZoom => Math.max(prevZoom / zoomFactor, 1e-15));  // Уменьшаем зум
+        setZoom(prevZoom => Math.max(prevZoom / zoomFactor, 1e-15));
       } else {
-        setZoom(prevZoom => Math.min(prevZoom * zoomFactor, 1e10));  // Увеличиваем зум
+        setZoom(prevZoom => Math.min(prevZoom * zoomFactor, 1e10));
       }
     };
 
@@ -93,7 +89,7 @@ const FractalMandelbrot: React.FC = () => {
       if (dragging) {
         const deltaX = event.clientX - startDrag.x;
         const deltaY = event.clientY - startDrag.y;
-        const zoomFactor = 4.0 * zoom;  // Влияние зума на перемещение
+        const zoomFactor = 4.0 * zoom;
         setOffsetX(prevOffsetX => prevOffsetX - deltaX * zoomFactor / canvas.width);
         setOffsetY(prevOffsetY => prevOffsetY + deltaY * zoomFactor / canvas.height);
         setStartDrag({ x: event.clientX, y: event.clientY });
@@ -104,11 +100,59 @@ const FractalMandelbrot: React.FC = () => {
       setDragging(false);
     };
 
+    const handleTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 2) {
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
+        const distance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        setStartDrag({ x: distance, y: 0 });
+      } else if (event.touches.length === 1) {
+        const touch = event.touches[0];
+        setStartDrag({ x: touch.clientX, y: touch.clientY });
+        setDragging(true);
+      }
+    };
+
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length === 2) {
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
+        const distance = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY
+        );
+        const zoomFactor = 1.05;
+        const deltaZoom = distance > startDrag.x ? zoomFactor : 1 / zoomFactor;
+        setZoom(prevZoom => Math.max(Math.min(prevZoom * deltaZoom, 1e10), 1e-15));
+        setStartDrag({ x: distance, y: 0 });
+      } else if (event.touches.length === 1 && dragging) {
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - startDrag.x;
+        const deltaY = touch.clientY - startDrag.y;
+        const zoomFactor = 4.0 * zoom;
+        setOffsetX(prevOffsetX => prevOffsetX - deltaX * zoomFactor / canvas.width);
+        setOffsetY(prevOffsetY => prevOffsetY + deltaY * zoomFactor / canvas.height);
+        setStartDrag({ x: touch.clientX, y: touch.clientY });
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setDragging(false);
+    };
+
     canvas.addEventListener("wheel", handleWheel);
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("mouseleave", handleMouseUp);
+
+    canvas.addEventListener("touchstart", handleTouchStart);
+    canvas.addEventListener("touchmove", handleTouchMove);
+    canvas.addEventListener("touchend", handleTouchEnd);
+    canvas.addEventListener("touchcancel", handleTouchEnd);
 
     return () => {
       canvas.removeEventListener("wheel", handleWheel);
@@ -116,10 +160,22 @@ const FractalMandelbrot: React.FC = () => {
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseup", handleMouseUp);
       canvas.removeEventListener("mouseleave", handleMouseUp);
+
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
+      canvas.removeEventListener("touchcancel", handleTouchEnd);
     };
   }, [zoom, offsetX, offsetY, dragging, startDrag]);
 
-  return <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight}></canvas>;
+  return (
+    <canvas
+      ref={canvasRef}
+      width={window.innerWidth}
+      height={window.innerHeight}
+      style={{ touchAction: "none" }}
+    ></canvas>
+  );
 };
 
 export default FractalMandelbrot;
